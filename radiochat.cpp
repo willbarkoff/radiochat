@@ -16,15 +16,19 @@
 #define NSS_PIN 9
 #define SPI_BUS spi0
 
+#define DEBUG_PIN 1
+
 PicoHAL* hal = new PicoHAL(spi0, MISO_PIN, MOSI_PIN, SCK_PIN, 8000000);
-SX1276 radio = new Module(hal, CS_PIN, DIO0_PIN, DIO1_PIN, RADIOLIB_NC);
+SX1276 radio = new Module(hal, CS_PIN, DIO0_PIN, RADIOLIB_NC, DIO1_PIN);
 
 int main() {
     stdio_init_all();
     gpio_init(CS_PIN);
     gpio_init(NSS_PIN);
+    gpio_init(DEBUG_PIN);
     gpio_set_dir(CS_PIN, GPIO_OUT);
     gpio_set_dir(NSS_PIN, GPIO_OUT);
+    gpio_set_dir(DEBUG_PIN, GPIO_OUT);
 
     while (!stdio_usb_connected()) {
         sleep_ms(500);
@@ -49,15 +53,14 @@ int main() {
     // loop forever
     for (;;) {
         // send a packet
-        printf("[SX1261] Transmitting packet ... ");
-        state = radio.transmit("[KD2ZGA] Hello World!");
+        printf("[SX1261] Waiting for packet ... ");
+
+        uint8_t data[20];
+
+        int state = radio.receive(data, 21);
         if (state == RADIOLIB_ERR_NONE) {
             // the packet was successfully transmitted
-            printf("success!\n");
-
-            // wait for a second before transmitting again
-            hal->delay(1000);
-
+            printf("success! received data: %s\n", data);
         } else {
             printf("failed, code %d\n", state);
         }
