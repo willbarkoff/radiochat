@@ -13,22 +13,30 @@ pico_sdk_init()
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/RadioLib" "${CMAKE_CURRENT_BINARY_DIR}/RadioLib")
 
-add_executable(${PROJECT_NAME} radiochat.cpp)
+add_executable(${PROJECT_NAME}
+        radiochat.cpp
+        tcpip.cpp
+        dnsserver/dnsserver.c
+        dhcpserver/dhcpserver.c
+)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-        RadioLib
         pico_stdlib
         pico_divider
         hardware_spi
         hardware_gpio
         pico_multicore
         pico_bootsel_via_double_reset
-        pico_cyw43_arch_none
-        pico_lwip
-        pico_lwip_arch
+        pico_cyw43_arch_lwip_threadsafe_background
+        pico_stdlib
+        RadioLib
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/dhcpserver
+        ${CMAKE_CURRENT_LIST_DIR}/dnsserver
+)
 
 add_compile_options(-Wall
         -Wno-format          # int != int32_t as far as the compiler is concerned because gcc has int32_t as long int
