@@ -1,3 +1,10 @@
+/*
+ * Many parts of this file were based on the Raspberry Pi Pico Examples Access Point Example.
+ *
+ * The Raspberry Pi Examples are licensed under the BSD-3-Clause license, available here:
+ * https://github.com/raspberrypi/pico-examples/blob/master/LICENSE.TXT
+ */
+
 #include "tcpip.hpp"
 
 #include "dhcpserver.h"
